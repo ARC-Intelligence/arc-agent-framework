@@ -1,6 +1,4 @@
-![Swarm Logo](assets/logo.png)
-
-# Swarm (experimental, educational)
+# ARC Agent Framework
 
 An educational framework exploring ergonomic, lightweight multi-agent orchestration.
 
