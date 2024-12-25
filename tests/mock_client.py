@@ -1,8 +1,10 @@
+import json
 from unittest.mock import MagicMock
-from swarm.types import ChatCompletionMessage, ChatCompletionMessageToolCall, Function
+
 from openai import OpenAI
 from openai.types.chat.chat_completion import ChatCompletion, Choice
-import json
+
+from swarm.types import ChatCompletionMessage, ChatCompletionMessageToolCall, Function
 
 
 def create_mock_response(message, function_calls=[], model="gpt-4o"):
@@ -31,9 +33,7 @@ def create_mock_response(message, function_calls=[], model="gpt-4o"):
         object="chat.completion",
         choices=[
             Choice(
-                message=ChatCompletionMessage(
-                    role=role, content=content, tool_calls=tool_calls
-                ),
+                message=ChatCompletionMessage(role=role, content=content, tool_calls=tool_calls),
                 finish_reason="stop",
                 index=0,
             )
@@ -85,12 +85,8 @@ client.set_sequential_responses(
 
 # This should return the first mock response
 first_response = client.chat.completions.create()
-print(
-    first_response.choices[0].message
-)  # Outputs: role='agent' content='First response'
+print(first_response.choices[0].message)  # Outputs: role='agent' content='First response'
 
 # This should return the second mock response
 second_response = client.chat.completions.create()
-print(
-    second_response.choices[0].message
-)  # Outputs: role='agent' content='Second response'
+print(second_response.choices[0].message)  # Outputs: role='agent' content='Second response'

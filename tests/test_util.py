@@ -24,9 +24,7 @@ def test_basic_function():
 
 
 def test_complex_function():
-    def complex_function_with_types_and_descriptions(
-        arg1: int, arg2: str, arg3: float = 3.14, arg4: bool = False
-    ):
+    def complex_function_with_types_and_descriptions(arg1: int, arg2: str, arg3: float = 3.14, arg4: bool = False):
         """This is a complex function with a docstring."""
         pass
 

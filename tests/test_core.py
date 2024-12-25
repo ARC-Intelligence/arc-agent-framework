@@ -1,8 +1,10 @@
-import pytest
-from swarm import Swarm, Agent
-from tests.mock_client import MockOpenAIClient, create_mock_response
-from unittest.mock import Mock
 import json
+from unittest.mock import Mock
+
+import pytest
+
+from swarm import Agent, Swarm
+from tests.mock_client import MockOpenAIClient, create_mock_response
 
 DEFAULT_RESPONSE_CONTENT = "sample response content"
 
@@ -10,9 +12,7 @@ DEFAULT_RESPONSE_CONTENT = "sample response content"
 @pytest.fixture
 def mock_openai_client():
     m = MockOpenAIClient()
-    m.set_response(
-        create_mock_response({"role": "assistant", "content": DEFAULT_RESPONSE_CONTENT})
-    )
+    m.set_response(create_mock_response({"role": "assistant", "content": DEFAULT_RESPONSE_CONTENT}))
     return m
 
 
@@ -39,22 +39,16 @@ def test_tool_call(mock_openai_client: MockOpenAIClient):
         return "It's sunny today."
 
     agent = Agent(name="Test Agent", functions=[get_weather])
-    messages = [
-        {"role": "user", "content": "What's the weather like in San Francisco?"}
-    ]
+    messages = [{"role": "user", "content": "What's the weather like in San Francisco?"}]
 
     # set mock to return a response that triggers function call
     mock_openai_client.set_sequential_responses(
         [
             create_mock_response(
                 message={"role": "assistant", "content": ""},
-                function_calls=[
-                    {"name": "get_weather", "args": {"location": expected_location}}
-                ],
+                function_calls=[{"name": "get_weather", "args": {"location": expected_location}}],
             ),
-            create_mock_response(
-                {"role": "assistant", "content": DEFAULT_RESPONSE_CONTENT}
-            ),
+            create_mock_response({"role": "assistant", "content": DEFAULT_RESPONSE_CONTENT}),
         ]
     )
 
@@ -78,22 +72,16 @@ def test_execute_tools_false(mock_openai_client: MockOpenAIClient):
         return "It's sunny today."
 
     agent = Agent(name="Test Agent", functions=[get_weather])
-    messages = [
-        {"role": "user", "content": "What's the weather like in San Francisco?"}
-    ]
+    messages = [{"role": "user", "content": "What's the weather like in San Francisco?"}]
 
     # set mock to return a response that triggers function call
     mock_openai_client.set_sequential_responses(
         [
             create_mock_response(
                 message={"role": "assistant", "content": ""},
-                function_calls=[
-                    {"name": "get_weather", "args": {"location": expected_location}}
-                ],
+                function_calls=[{"name": "get_weather", "args": {"location": expected_location}}],
             ),
-            create_mock_response(
-                {"role": "assistant", "content": DEFAULT_RESPONSE_CONTENT}
-            ),
+            create_mock_response({"role": "assistant", "content": DEFAULT_RESPONSE_CONTENT}),
         ]
     )
 
@@ -110,9 +98,7 @@ def test_execute_tools_false(mock_openai_client: MockOpenAIClient):
     assert tool_calls is not None and len(tool_calls) == 1
     tool_call = tool_calls[0]
     assert tool_call["function"]["name"] == "get_weather"
-    assert json.loads(tool_call["function"]["arguments"]) == {
-        "location": expected_location
-    }
+    assert json.loads(tool_call["function"]["arguments"]) == {"location": expected_location}
 
 
 def test_handoff(mock_openai_client: MockOpenAIClient):
@@ -129,9 +115,7 @@ def test_handoff(mock_openai_client: MockOpenAIClient):
                 message={"role": "assistant", "content": ""},
                 function_calls=[{"name": "transfer_to_agent2"}],
             ),
-            create_mock_response(
-                {"role": "assistant", "content": DEFAULT_RESPONSE_CONTENT}
-            ),
+            create_mock_response({"role": "assistant", "content": DEFAULT_RESPONSE_CONTENT}),
         ]
     )
 
