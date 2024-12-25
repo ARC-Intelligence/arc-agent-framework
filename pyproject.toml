@@ -1,3 +1,79 @@
+[tool.poetry]
+name = "arc-agent-framework"
+version = "0.1.0"
+description = ""
+authors = ["Julian Gesche", "Simon Zimmermann"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+openai = "^1.53.0"
+python-dotenv ="^1.0.1"
+pandas = "^2.2.2"
+typing_extensions = "^4.0.0"
+autoevals = "^0.0.106"
+sentry-sdk = "^2.19.0"
+boto3 = "^1.35.71"
+matplotlib = "^3.9.3"
+tqdm = "^4.67.1"
+sample-helper-aws-appconfig = "2.1.2"
+
+pytz = "^2024.2"
+botocore = "^1.35.78"
+langfuse = "^2.57.0"
+[tool.poetry.dev-dependencies]
+pytest = "7.4.2"
+pytest-cov = "4.1.0"
+black = "23.9.1"
+bandit = "1.7.5"
+ruff = "0.1.13"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^4.0.1"
+
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=1.0.0","setuptools"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+addopts = "-vvv"
+testpaths = "tests"
+
+[tool.black]
+line_length = 120
+target_version = ['py310']
+exclude = '''
+/(
+    \.venv
+    |\.git
+    |__pycache__
+    |build
+    |dist
+    |venv
+)/
+'''
+
+[tool.ruff]
+exclude = [".venv", ".git", "__pycache__", "build", "dist", "venv"]
+lint.ignore = ["E203"]
+line-length = 120
+lint.select = ["B", "C", "E", "F", "W", "B9"]
+
+[tool.ruff.lint.per-file-ignores]
+
+[tool.bandit]
+skips = ["B608", "B404", "B603", "B607", "B104"]
+target = ["src/", "main.py"]
+exclude_dirs = [
+  "tests",
+  ".venv",
+  ".git",
+  "__pycache__",
+  "build",
+  "dist",
+  "venv",
+]
+
+[[tool.poetry.source]]
+name = "PyPI"
+priority = "primary"

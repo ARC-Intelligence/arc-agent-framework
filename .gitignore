@@ -123,3 +123,87 @@ venv.bak/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+.venv/
+# Serverless directories
+.serverless/
+node_modules
+testin.ipynb
+Makefile
+__pycache__/
+testing.ipynb
+
+
+.env
+
+logs.txt
+
+# Local .terraform directories
+**/.terraform/*
+!**/.terraform/modules/
+
+# .terraform.lock.hcl files to lock provider versions
+*.terraform.lock.hcl
+
+# Local state files
+terraform.tfstate
+terraform.tfstate.backup
+*.tfstate
+*.tfstate.*
+
+# Crash log files
+crash.log
+
+# Exclude any temporary or sensitive files
+*.tfvars
+*.tfvars.json
+
+# Ignore plan output files
+*.tfplan
+
+# Ignore .DS_Store files (macOS)
+.DS_Store
+
+# Ignore log files
+*.log
+
+# Ignore local overrides
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Ignore archive files
+*.zip
+*.tar.gz
+*.tar
+*.gz
+*.7z
+*.rar
+*.csv
+
+
+# Ignore any other temporary files
+*.tmp
+*.bak
+*.swp
+.env
+*.json
+data/
