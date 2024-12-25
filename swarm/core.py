@@ -6,6 +6,7 @@ from typing import Callable, List, Union
 
 # Package/library imports
 from openai import OpenAI
+from azure_client import get_client
 
 from .types import (
     Agent,
@@ -26,7 +27,7 @@ __CTX_VARS_NAME__ = "context_variables"
 class Swarm:
     def __init__(self, client=None):
         if not client:
-            client = OpenAI()
+            client = get_client(model="4o_mini")
         self.client = client
 
     def get_chat_completion(
