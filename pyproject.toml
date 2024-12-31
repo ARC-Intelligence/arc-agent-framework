@@ -5,10 +5,15 @@ description = ""
 authors = ["Julian Gesche", "Simon Zimmermann"]
 readme = "README.md"
 
+# -- IMPORTANT: Put the packages array directly here under [tool.poetry].
+packages = [
+  { include = "arc_agent_framework", from = "src" }
+]
+
 [tool.poetry.dependencies]
 python = "^3.10"
 openai = "^1.53.0"
-python-dotenv ="^1.0.1"
+python-dotenv = "^1.0.1"
 pandas = "^2.2.2"
 typing_extensions = "^4.0.0"
 autoevals = "^0.0.106"
@@ -17,10 +22,10 @@ boto3 = "^1.35.71"
 matplotlib = "^3.9.3"
 tqdm = "^4.67.1"
 sample-helper-aws-appconfig = "2.1.2"
-
 pytz = "^2024.2"
 botocore = "^1.35.78"
 langfuse = "^2.57.0"
+
 [tool.poetry.dev-dependencies]
 pytest = "7.4.2"
 pytest-cov = "4.1.0"
@@ -32,7 +37,7 @@ ruff = "0.1.13"
 pre-commit = "^4.0.1"
 
 [build-system]
-requires = ["poetry-core>=1.0.0","setuptools"]
+requires = ["poetry-core>=1.0.0", "setuptools"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
