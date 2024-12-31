@@ -4,9 +4,10 @@ import json
 from collections import defaultdict
 from typing import Callable, List, Union
 
+from azure_client import get_client
+
 # Package/library imports
 from openai import OpenAI
-from azure_client import get_client
 
 from .types import (
     Agent,

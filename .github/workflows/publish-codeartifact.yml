@@ -48,7 +48,7 @@ jobs:
               --domain-owner 149536461060 \
               --query authorizationToken \
               --output text)
-          
+
           # Get the PyPI endpoint for your repository
           export CODEARTIFACT_PYPI_URL=$(aws codeartifact get-repository-endpoint \
               --domain mydomain \
