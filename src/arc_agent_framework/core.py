@@ -2,13 +2,11 @@
 import copy
 import json
 from collections import defaultdict
-from typing import Callable, List, Union
+from typing import List
 
 from azure_client import get_client
 
 # Package/library imports
-from openai import OpenAI
-
 from .types import (
     Agent,
     AgentFunction,
@@ -80,9 +78,10 @@ class Swarm:
                 try:
                     return Result(value=str(result))
                 except Exception as e:
-                    error_message = f"Failed to cast response to string: {result}. Make sure agent functions return a string or Result object. Error: {str(e)}"
+                    error_message = f"""Failed to cast response to string: {result}.
+                    Make sure agent functions return a string or Result object. Error: {str(e)}"""
                     debug_print(debug, error_message)
-                    raise TypeError(error_message)
+                    raise TypeError(error_message) from e
 
     def handle_tool_calls(
         self,
