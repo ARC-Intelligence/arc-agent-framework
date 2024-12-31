@@ -1,0 +1,44 @@
+name: Python Style and Unit Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Cache Poetry virtualenv
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pypoetry/virtualenvs
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install Poetry
+        run: curl -sSL https://install.python-poetry.org | python3 -
+
+      - name: Install dependencies with Poetry
+        run: |
+          poetry install
+      - name: Style test with Black
+        run: poetry run black --config pyproject.toml --check --diff  .
+
+      - name: Style test with Ruff
+        run: poetry run ruff --config pyproject.toml
+
+      - name: Security check with Bandit
+        run: poetry run bandit -c pyproject.toml -r .

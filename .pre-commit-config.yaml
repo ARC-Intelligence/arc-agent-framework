@@ -1,8 +1,36 @@
+default_language_version:
+  python: python3.10
+
 repos:
-  - repo: https://github.com/hhatto/autopep8
-    rev: v2.1.0
+  # general checks (see here: https://pre-commit.com/hooks.html)
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
     hooks:
-      - id: autopep8
-        args:
-          - --in-place
-          - --aggressive
+      - id: check-yaml
+        args: [--allow-multiple-documents]
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+
+  # black - formatting
+  - repo: https://github.com/psf/black
+    rev: 23.9.1
+    hooks:
+      - id: black
+        name: black
+        args: [ "--config", "pyproject.toml" ]
+
+  # ruff - linting
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.2.1
+    hooks:
+      - id: ruff
+        name: ruff
+        args: [ "--config", "pyproject.toml","--select", "I" ,"--fix"]
+
+  # bandit - find common security issues
+  - repo: https://github.com/pycqa/bandit
+    rev: 1.7.5
+    hooks:
+      - id: bandit
+        args: ["-c", "pyproject.toml"]
+        additional_dependencies: ["bandit[toml]"]
