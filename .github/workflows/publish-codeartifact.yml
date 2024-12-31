@@ -1,0 +1,71 @@
+name: Publish to CodeArtifact
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: "eu-central-1"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials (Base Account)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::051826707296:role/GithubActionsDevelopment
+          aws-region: ${{ env.AWS_REGION }}
+          role-skip-session-tagging: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install Poetry
+        run: pip install poetry
+
+      - name: Build Package with Poetry
+        run: |
+          poetry install
+          poetry build
+
+      - name: Configure Poetry for CodeArtifact
+        run: |
+          # Get a temporary CodeArtifact auth token
+          export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token \
+              --domain mydomain \
+              --domain-owner 149536461060 \
+              --query authorizationToken \
+              --output text)
+          
+          # Get the PyPI endpoint for your repository
+          export CODEARTIFACT_PYPI_URL=$(aws codeartifact get-repository-endpoint \
+              --domain mydomain \
+              --domain-owner 149536461060 \
+              --repository myrepo \
+              --format pypi \
+              --query repositoryEndpoint \
+              --output text)
+
+          # Let Poetry know about your CodeArtifact repo
+          poetry config repositories.myrepo $CODEARTIFACT_PYPI_URL
+
+          # Dummy username is "aws"; password is the token
+          poetry config http-basic.myrepo aws $CODEARTIFACT_AUTH_TOKEN
+
+      - name: Publish to CodeArtifact
+        run: |
+          poetry publish --repository myrepo \
+            --username aws \
+            --password $CODEARTIFACT_AUTH_TOKEN
