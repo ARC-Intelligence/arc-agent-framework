@@ -330,6 +330,9 @@ run_demo_loop(agent, stream=True)
 
 ## Deploy
 
+Make sure to set the appropriate credentils to access the codeartifacts in your local aws credentials.
+
+Then run: 
 ```
-poetry build
+make deploy
 ```
