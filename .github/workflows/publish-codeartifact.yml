@@ -2,8 +2,8 @@ name: Publish to CodeArtifact
 
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:
+    branches: [ main ]  # fires after merging a PR into main
+  workflow_dispatch:     # allows manual triggering
 
 permissions:
   id-token: write
@@ -17,55 +17,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Check out code
       - name: Check out code
         uses: actions/checkout@v3
 
-      - name: Configure AWS Credentials (Base Account)
+      # 2. Configure AWS Credentials to allow publishing to CodeArtifact
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::051826707296:role/GithubActionsDevelopment
           aws-region: ${{ env.AWS_REGION }}
           role-skip-session-tagging: true
 
+      # 3. Set up Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
 
+      # 4. Install Poetry
       - name: Install Poetry
         run: pip install poetry
 
-      - name: Build Package with Poetry
-        run: |
-          poetry install
-          poetry build
+      # (Optional) 5. Install dependencies
+      # If you have any runtime or dev dependencies needed for building,
+      # tests, or linting, do that here:
+      - name: Install project dependencies
+        run: poetry install
 
-      - name: Configure Poetry for CodeArtifact
-        run: |
-          # Get a temporary CodeArtifact auth token
-          export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token \
-              --domain mydomain \
-              --domain-owner 149536461060 \
-              --query authorizationToken \
-              --output text)
-
-          # Get the PyPI endpoint for your repository
-          export CODEARTIFACT_PYPI_URL=$(aws codeartifact get-repository-endpoint \
-              --domain mydomain \
-              --domain-owner 149536461060 \
-              --repository myrepo \
-              --format pypi \
-              --query repositoryEndpoint \
-              --output text)
-
-          # Let Poetry know about your CodeArtifact repo
-          poetry config repositories.myrepo $CODEARTIFACT_PYPI_URL
-
-          # Dummy username is "aws"; password is the token
-          poetry config http-basic.myrepo aws $CODEARTIFACT_AUTH_TOKEN
-
-      - name: Publish to CodeArtifact
-        run: |
-          poetry publish --repository myrepo \
-            --username aws \
-            --password $CODEARTIFACT_AUTH_TOKEN
+      # 6. Call the Makefile target that does it all
+      - name: Make Publish
+        run: make publish
