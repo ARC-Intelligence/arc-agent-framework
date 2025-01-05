@@ -4,7 +4,7 @@ import json
 from collections import defaultdict
 from typing import List
 
-from azure_client import get_client
+from .azure_client import get_client
 
 # Package/library imports
 from .types import (
@@ -24,10 +24,14 @@ __CTX_VARS_NAME__ = "context_variables"
 
 
 class Swarm:
-    def __init__(self, client=None):
+    def __init__(self, client=None, trace_id=None):
         if not client:
-            client = get_client(model="4o_mini")
+            client = get_client(model="4O_mini")
         self.client = client
+        if trace_id:
+            self.trace_id = trace_id
+        else:
+            self.trace_id = None
 
     def get_chat_completion(
         self,
@@ -57,6 +61,8 @@ class Swarm:
             "tools": tools or None,
             "tool_choice": agent.tool_choice,
             "stream": stream,
+            "trace_id": self.trace_id or None,
+            "name": agent.name,
         }
 
         if tools:
