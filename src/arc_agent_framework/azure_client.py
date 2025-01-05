@@ -4,70 +4,48 @@ import os
 import dotenv
 from langfuse.openai import AzureOpenAI
 
+ENV_VARS_AZURE_OPENAI = {
+    "4O": ("AZURE_4O_KEY", "AZURE_4O_VERSION", "AZURE_4O_ENDPOINT"),
+    "4O_mini": ("AZURE_4O_MINI_KEY", "AZURE_4O_MINI_VERSION", "AZURE_4O_MINI_ENDPOINT"),
+    "35": ("AZURE_35_KEY", "AZURE_35_VERSION", "AZURE_35_ENDPOINT"),
+}
+
+
+def _check_env_vars(model: str, env_keys: tuple) -> None:
+    """Ensure all required environment variables for the given model are set."""
+    missing = [key for key in env_keys if not os.getenv(key)]
+    if missing:
+        missing_str = "\n".join(missing)
+        raise ValueError(
+            f"""
+            Azure environment variables not set for model '{model}'.
+            Missing environment variables:
+            {missing_str}
+            """
+        )
+
 
 # Initialize and wrap the AzureOpenAI client
-def get_client(model="4O"):
-    # Load environment variables
+def get_client(model: str = "4O") -> AzureOpenAI:
+    """Initialize and return an AzureOpenAI client for the specified model."""
     dotenv.load_dotenv()
-    # check if the model is valid
-    if model not in ["4O", "4O_mini", "35"]:
-        raise ValueError("Invalid model name")
-    
-    # check if the environment variables are set
-    if model == "4O":
-        if not os.getenv("AZURE_4O_KEY") or not os.getenv("AZURE_4O_VERSION") or not os.getenv("AZURE_4O_ENDPOINT"):
-            raise ValueError(f"""
-                             Azure environment variables not set. 
-                             Available environment variables for model 4O are:
-                             {os.getenv("AZURE_4O_KEY")}
-                                {os.getenv("AZURE_4O_VERSION")}
-                                {os.getenv("AZURE_4O_ENDPOINT")}
-                             
-                             """)
-    elif model == "4O_mini":
-        if not os.getenv("AZURE_4O_MINI_KEY") or not os.getenv("AZURE_4O_MINI_VERSION") or not os.getenv(
-                "AZURE_4O_MINI_ENDPOINT"):
-            raise ValueError(f"""
-                             Azure environment variables not set. 
-                             Available environment variables for model 4O_mini are:
-                             {os.getenv("AZURE_4O_MINI_KEY")}
-                                {os.getenv("AZURE_4O_MINI_VERSION")}
-                                {os.getenv("AZURE_4O_MINI_ENDPOINT")}
-                             
-                             """)
-    elif model == "35":
-        if not os.getenv("AZURE_35_KEY") or not os.getenv("AZURE_35_VERSION") or not os.getenv("AZURE_35_ENDPOINT"):
-            raise ValueError(f"""
-                             Azure environment variables not set. 
-                             Available environment variables for model 35 are:
-                             {os.getenv("AZURE_35_KEY")}
-                                {os.getenv("AZURE_35_VERSION")}
-                                {os.getenv("AZURE_35_ENDPOINT")}
-                             
-                             """)
 
-    if model == "4O":
-        return AzureOpenAI(
-            api_key=os.getenv("AZURE_4O_KEY"),
-            api_version=os.getenv("AZURE_4O_VERSION"),
-            azure_endpoint=os.getenv("AZURE_4O_ENDPOINT"),
-        )
-    elif model == "4O_mini":
-        return AzureOpenAI(
-            api_key=os.getenv("AZURE_4O_MINI_KEY"),
-            api_version=os.getenv("AZURE_4O_MINI_VERSION"),
-            azure_endpoint=os.getenv("AZURE_4O_MINI_ENDPOINT"),
-        )
-    elif model == "35":
-        return AzureOpenAI(
-            api_key=os.getenv("AZURE_35_KEY"),
-            api_version=os.getenv("AZURE_35_VERSION"),
-            azure_endpoint=os.getenv("AZURE_35_ENDPOINT"),
-        )
-    else:
-        raise ValueError("Invalid model name")
-    
-    
+    if model not in ENV_VARS_AZURE_OPENAI:
+        raise ValueError(f"Invalid model name '{model}'. Must be one of {list(ENV_VARS_AZURE_OPENAI.keys())}.")
+
+    # Check required environment variables
+    required_envs = ENV_VARS_AZURE_OPENAI[model]
+    _check_env_vars(model, required_envs)
+
+    # Build the client using the validated environment variables
+    api_key, api_version, azure_endpoint = (os.getenv(var) for var in required_envs)
+    return AzureOpenAI(
+        api_key=api_key,
+        api_version=api_version,
+        azure_endpoint=azure_endpoint,
+    )
+
+
 def get_model_name(model):
     if model == "4O":
         return os.getenv("AZURE_MODEL_NAME_4O")
